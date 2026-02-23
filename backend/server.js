@@ -4,6 +4,8 @@ const connectDB = require("./config/db");
 const User = require("./model/userModel");
 const cors = require("cors")
 require("dotenv").config();
+const bcrypt = require("bcryptjs")
+
 
 const app = express();
 connectDB()
@@ -30,9 +32,16 @@ app.post("/register", async (req, res) => {
       });
     }
 
-    const user = await User.create({ name, email, password });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    console.log(user)
+    await User.create({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    // console.log(user)
     res.status(201).json({
       status: "Success",
       message: "User Created Successfully"
@@ -53,7 +62,7 @@ app.post("/register", async (req, res) => {
     // fallback
     res.status(500).json({
       status: "Fail",
-      message: "Server Error"
+      message: error.message
     });
   }
 });
