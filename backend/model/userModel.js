@@ -24,9 +24,10 @@ const userSchema = new mongoose.Schema({
       required: [true, "Password is required"],
       minlength: 6,
       select: false, // Don't return password by default
-    },
-    timestamps:true
-})
+    }
+},
+  {timestamps:true}
+)
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

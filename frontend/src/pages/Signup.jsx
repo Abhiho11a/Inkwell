@@ -7,14 +7,41 @@ export default function Signup() {
   const [password,setPassword] = useState("")
   const [confirmpassword,setConfirmpassword] = useState("")
 
-  function signup(){
+  async function handleSignup(){
     if((!name||!email||!password) || (password !== confirmpassword))
     {
       alert("Please enter all details correctly")
       return
     }
-    console.log(name,email,password)
+    // console.log(name,email,password)
+    try{
+    const response = await fetch("http://127.0.0.1:8000/register",{
+      method:"POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if(!response.ok)
+    {
+      alert(data.message);
+      return;
+    }
+
+    alert(data.message)
   }
+  catch(err)
+  {
+    alert(err)
+  }
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center px-4">
@@ -81,9 +108,9 @@ export default function Signup() {
             />
           </div>
           <button
-            type="submit"
+            type="button"
             className="w-full rounded-lg bg-blue-600 py-2.5 text-white font-medium hover:bg-blue-700 transition shadow-md"
-            onClick={()=>signup()}
+            onClick={()=>handleSignup()}
           >
             Sign Up
           </button>
