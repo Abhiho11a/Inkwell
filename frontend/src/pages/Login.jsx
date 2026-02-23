@@ -1,18 +1,44 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [email,setEmail] = useState(null)
   const [password,setPassword] = useState(null)
+  const navigate = useNavigate()
 
-  function login(){
+  async function handlelogin(){
     if(!email || !password)
     {
       alert("Please enter all details");
       return;
     }
 
-    console.log()
+    try{
+      const response = await fetch("http://127.0.0.1:8000/login",{
+        method:"POST",
+         headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if(data.status === "Success")
+    {
+      localStorage.setItem("token","token123")
+      navigate("/")
+
+    }
+    alert(data.message)
+
+    }
+    catch(err){
+      alert(err.message)
+    }
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center px-4">
@@ -64,9 +90,9 @@ export default function Login() {
           </div>
 
           <button
-            type="submit"
+            type="button"
             className="w-full rounded-lg bg-blue-600 py-2.5 text-white font-medium hover:bg-blue-700 transition shadow-md"
-            onClick={()=>login()}
+            onClick={()=>handlelogin()}
           >
             Login
           </button>

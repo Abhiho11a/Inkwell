@@ -1,38 +1,18 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { LogOut, UserCircle } from "lucide-react"
+import { blogs } from "../assets/blogs";
 
 export default function Home(){
 
     const [search, setSearch] = useState("");
     const [pagination,setPagination] = useState(1);
     const navigate = useNavigate()
+    const [isLoggenIn,setIsLoggedIn] = useState(localStorage.getItem("token")?true:false)
 
     let maxPagination = 5;
     const numbers = Array.from({ length: maxPagination }, (_, i) => i + 1);
 
-    const dummyPosts = [
-        {
-        id: 1,
-        title: "Mastering React in 2026",
-        excerpt: "Learn advanced patterns, hooks, and performance tricks.",
-        author: "Abhi",
-        date: "Feb 15, 2026",
-        },
-        {
-        id: 2,
-        title: "Node.js Authentication Guide",
-        excerpt: "JWT, middleware, protected routes explained clearly.",
-        author: "John",
-        date: "Feb 12, 2026",
-        },
-        {
-        id: 3,
-        title: "MongoDB Relationships Simplified",
-        excerpt: "Understand refs, populate and schema design.",
-        author: "Sarah",
-        date: "Feb 10, 2026",
-        },
-    ];
 
     return(
         <div className="min-h-screen bg-gray-50">
@@ -42,14 +22,23 @@ export default function Home(){
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-600">Blogify</h1>
 
-          <div className="space-x-4">
+          {isLoggenIn?<div className="flex gap-10">
+            <Link>My Blogs</Link>
+            <Link>Create Blog</Link>
+            <UserCircle/>
+            <LogOut onClick={() => {
+              localStorage.removeItem("token")
+              setIsLoggedIn(false)
+            }}/>
+          </div>
+          :<div className="space-x-4">
             <button onClick={() => navigate("/login")} className="px-4 py-2 text-blue-600 font-medium hover:text-blue-800 transition">
               Login
             </button>
             <button onClick={() => navigate("/signup")} className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow">
               Register
             </button>
-          </div>
+          </div>}
         </div>
       </nav>
 
@@ -83,9 +72,9 @@ export default function Home(){
       {/* 📰 Blog Grid */}
       <div className="max-w-7xl mx-auto px-6 pb-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {dummyPosts.map((post) => (
+          {blogs.map((post) => (
             <div
-              key={post.id}
+              key={post._id}
               className="bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 flex flex-col justify-between"
             >
               <div>
@@ -99,7 +88,7 @@ export default function Home(){
 
               <div className="mt-4">
                 <p className="text-sm text-gray-500">
-                  By {post.author} • {post.date}
+                  By {post.author.name} • {new Date(post.createdAt).toLocaleDateString()}
                 </p>
                 <button className="mt-3 text-blue-600 font-medium hover:text-blue-800">
                   Read More →

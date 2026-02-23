@@ -32,13 +32,13 @@ app.post("/register", async (req, res) => {
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // const salt = await bcrypt.genSalt(10);
+    // const hashedPassword = await bcrypt.hash(password, salt);
 
     await User.create({
       name,
       email,
-      password: hashedPassword
+      password: password
     });
 
     // console.log(user)
@@ -67,8 +67,52 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log(email,password)
+
+    if (!email || !password) {
+      return res.status(400).json({
+        status: "Fail",
+        message: "Email and password are required"
+      });
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+
+    console.log("User from DB:", user);
+    console.log("Entered password:", password);
+    console.log("Stored password:", user?.password);
+
+    const isMatch = user
+      ? await bcrypt.compare(password, user.password)
+      : false;
+      console.log("isMatch:", isMatch);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        status: "Fail",
+        message: "Invalid Email or Password"
+      });
+    }
+
+    res.status(200).json({
+      status: "Success",
+      message: "Login Successful"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      status: "Fail",
+      message: "Server Error"
+    });
+  }
+});
+
+
 //Starting Server
-const PORT = process.env.port || 8000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT,"127.0.0.1",(req,res)=>{
     console.log(`Listening to the PORT:${PORT}\nURL: http://127.0.0.1:${PORT}/`)
 })
