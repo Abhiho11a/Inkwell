@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, UserCircle } from "lucide-react"
 import { blogs } from "../assets/blogs";
+import BlogDetailModal from "../components/BlogDetailModal";
 
 export default function Home(){
 
@@ -9,6 +10,7 @@ export default function Home(){
     const [pagination,setPagination] = useState(1);
     const navigate = useNavigate()
     const [isLoggenIn,setIsLoggedIn] = useState(localStorage.getItem("token")?true:false)
+    const [detailedView,setDetailedView] = useState("")
 
     let maxPagination = 5;
     const numbers = Array.from({ length: maxPagination }, (_, i) => i + 1);
@@ -90,7 +92,7 @@ export default function Home(){
                 <p className="text-sm text-gray-500">
                   By {post.author.name} • {new Date(post.createdAt).toLocaleDateString()}
                 </p>
-                <button className="mt-3 text-blue-600 font-medium hover:text-blue-800">
+                <button onClick={()=>setDetailedView(post)} className="mt-3 text-blue-600 font-medium hover:text-blue-800">
                   Read More →
                 </button>
               </div>
@@ -114,6 +116,8 @@ export default function Home(){
           </button>
         </div>
       </div>
+
+      {detailedView && <BlogDetailModal blog={detailedView} onClose={()=>setDetailedView("")}/>}
     </div>
     )
 }
