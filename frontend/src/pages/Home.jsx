@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, UserCircle } from "lucide-react"
-import { blogs } from "../assets/blogs";
 import BlogDetailModal from "../components/BlogDetailModal";
+import { useEffect } from "react";
 
 export default function Home(){
 
@@ -11,9 +11,31 @@ export default function Home(){
     const navigate = useNavigate()
     const [isLoggenIn,setIsLoggedIn] = useState(localStorage.getItem("token")?true:false)
     const [detailedView,setDetailedView] = useState("")
+    const [blogs,setBlogs] = useState("")
 
     let maxPagination = 5;
     const numbers = Array.from({ length: maxPagination }, (_, i) => i + 1);
+
+    useEffect(()=>{
+      fetchBlogs(pagination)
+    },[pagination])
+
+    async function fetchBlogs(page){
+
+      const response = await fetch(`http://127.0.0.1:8000/api/blogs?page=${pagination}`,{
+        method:"GET",
+         headers: {
+                "Content-Type": "application/json",
+        },
+      })
+
+      const data = await response.json();
+
+      if(!response.ok)
+        alert(data.message)
+      else
+        setBlogs(data.data)
+    } 
 
 
     return(
@@ -72,7 +94,7 @@ export default function Home(){
       </div>
 
       {/* 📰 Blog Grid */}
-      <div className="max-w-7xl mx-auto px-6 pb-16">
+      {blogs.length === 0?<h2 className="text-center py-5">No blogs found</h2>:<div className="max-w-7xl mx-auto px-6 pb-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogs.map((post) => (
             <div
@@ -100,6 +122,7 @@ export default function Home(){
           ))}
         </div>
       </div>
+      }      
 
       {/* 📄 Pagination */}
       <div className="flex justify-center pb-16">

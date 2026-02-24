@@ -6,6 +6,7 @@ const cors = require("cors")
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { blogs } = require("../frontend/src/assets/blogs");
+const Blog = require("./model/blogModel");
 
 
 const app = express();
@@ -18,6 +19,30 @@ app.use(cors())
 //ROUTES
 app.get("/",(req,res)=>{
     res.send("Hello from the backend")
+})
+
+app.get("/api/blogs",async(req,res)=>{
+  try{
+
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 3
+    const skip = (page - 1) * limit
+
+    const totalBlogs = await Blog.countDocuments()
+    const totalPages = Math.ceil(totalBlogs / limit)
+
+    const blogs = await Blog.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    res.status(200).json({message:"Success",data:blogs})
+  }catch (err) {
+    res.status(500).json({
+      status: "Fail",
+      message: "Server Error"
+    });
+  }
 })
 
 app.post("/api/blog/register", async (req, res) => {
