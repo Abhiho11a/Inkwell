@@ -25,7 +25,7 @@ export default function Home(){
           <h1 className="text-2xl font-bold text-blue-600">Blogify</h1>
 
           {isLoggenIn?<div className="flex gap-10">
-            <Link>My Blogs</Link>
+            <Link to={"/myblog"}>My Blogs</Link>
             <Link>Create Blog</Link>
             <UserCircle/>
             <LogOut onClick={() => {

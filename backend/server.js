@@ -4,7 +4,8 @@ const connectDB = require("./config/db");
 const User = require("./model/userModel");
 const cors = require("cors")
 require("dotenv").config();
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
+const { blogs } = require("../frontend/src/assets/blogs");
 
 
 const app = express();
@@ -19,7 +20,7 @@ app.get("/",(req,res)=>{
     res.send("Hello from the backend")
 })
 
-app.post("/register", async (req, res) => {
+app.post("/api/blog/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -67,7 +68,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
+app.post("/api/blog/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log(email,password)
@@ -109,6 +110,15 @@ app.post("/login", async (req, res) => {
     });
   }
 });
+
+app.get("/api/blog/myblog/:userId", async (req, res) => {
+  try {
+    const myblog = blogs.filter(blog => blog.author.name === req.params.userId)
+    res.status(200).json({ status: "Success", data: myblog })
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: "Server Error" })
+  }
+})
 
 
 //Starting Server
