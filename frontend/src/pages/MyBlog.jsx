@@ -68,7 +68,12 @@ export default function MyBlog() {
 
         {/* Header */}
         <div className="flex justify-between items-center mb-10">
-            <ArrowLeft size={38} className="cursor-pointer" onClick={()=>navigate("/")}/>
+            <button
+                onClick={() => navigate(-1)}
+                className="text-gray-600 hover:text-black transition"
+            >
+                ← Back
+            </button>
             <h1 className="text-3xl font-bold text-gray-800">
               My Blogs
             </h1>

@@ -26,7 +26,7 @@ export default function Home(){
 
           {isLoggenIn?<div className="flex gap-10">
             <Link to={"/myblog"}>My Blogs</Link>
-            <Link>Create Blog</Link>
+            <Link to={"/create-blog"}>Create Blog</Link>
             <UserCircle/>
             <LogOut onClick={() => {
               localStorage.removeItem("token")

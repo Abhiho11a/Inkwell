@@ -120,6 +120,13 @@ app.get("/api/blog/myblog/:userId", async (req, res) => {
   }
 })
 
+app.post("/api/blogs",async(req,res) => {
+  const newBlog = req.body
+  // console.log(newBlog)
+
+  res.status(200).json({status:"Success",data:newBlog})
+})
+
 
 //Starting Server
 const PORT = process.env.PORT || 8000;
