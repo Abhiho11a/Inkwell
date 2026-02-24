@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import MyBlog from "./pages/MyBlog";
 import CreateBlog from "./pages/CreateBlog";
+import EditBlog from "./pages/EditBlog";
 
 export default function App() {
 
@@ -15,7 +16,8 @@ export default function App() {
       <Route path="/login" element={<Login/>}/>
       <Route path="/signup" element={<Signup/>}/>
       <Route path="/myblog" element={<MyBlog/>}/>
-      <Route path="create-blog" element={<CreateBlog/>}/>
+      <Route path="/create-blog" element={<CreateBlog/>}/>
+      <Route path="/edit-blog/:id" element={<EditBlog/>}/>
     </Routes>
     </>
   );

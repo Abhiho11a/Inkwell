@@ -179,6 +179,65 @@ app.post("/api/blogs",async(req,res) => {
 
 })
 
+app.get("/api/blogs/:id", async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id)
+
+    if (!blog) {
+      return res.status(404).json({
+        status: "Fail",
+        message: "Blog not found"
+      })
+    }
+
+    res.status(200).json({ status: "Success", blog })
+
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message })
+  }
+})
+
+app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
+  try {
+    const blog = await Blog.findById(req.params.id)
+    console.log(blog)  // ✅ typo fixed
+
+    if (!blog) {
+      return res.status(404).json({
+        status: "Fail",
+        message: "Blog not found"
+      })
+    }
+
+    // if (blog.author._id.toString() !== req.user.id) {
+    //   return res.status(403).json({
+    //     status: "Fail",
+    //     message: "You are not allowed to edit this blog"
+    //   })
+    // }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      {
+        title: req.body.title,
+        excerpt: req.body.excerpt,
+        content: req.body.content,
+        tags: req.body.tags
+      },
+      { new: true, runValidators: true }
+    )
+
+    res.status(200).json({
+      status: "Success",
+      message: "Blog updated successfully",
+      data: updatedBlog
+    })
+
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message })  // ✅ err.message
+  }
+})
+
 
 //Starting Server
 const PORT = process.env.PORT || 8000;

@@ -69,7 +69,7 @@ export default function MyBlog() {
         {/* Header */}
         <div className="flex justify-between items-center mb-10">
             <button
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/")}
                 className="text-gray-600 hover:text-black transition"
             >
                 ← Back
