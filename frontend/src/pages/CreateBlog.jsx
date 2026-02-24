@@ -28,6 +28,7 @@ export default function CreateBlog() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const userId = JSON.parse(localStorage.getItem("user"))
 
     const newBlog = {
       title: formData.title,
@@ -52,13 +53,20 @@ export default function CreateBlog() {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(newBlog),
+            body: JSON.stringify({newBlog,userId})
         });
 
-        const data =await response.json()
+        const data = await response.json()
+        // console.log(data)
+
+        if(data.status === "Success")
+        {
+          alert(data.message)
+          navigate("/myblog");
+        }
+        else if(data.status === "Fail")
+          alert(data.message)
         
-        // console.log("FFF",data)
-        navigate("/myblog");
     } catch (error) {
       console.error("Blog creation failed:", error);
     } finally {

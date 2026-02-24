@@ -30,6 +30,7 @@ export default function Login() {
     if(data.status === "Success")
     {
       localStorage.setItem("token","token123")
+      localStorage.setItem("user",JSON.stringify(data.data))
       navigate("/")
 
     }

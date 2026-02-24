@@ -16,7 +16,7 @@ export default function MyBlog() {
         const user = JSON.parse(localStorage.getItem("user")) // ✅ get logged in user
         // console.log(user)
 
-        const res = await fetch(`http://127.0.0.1:8000/api/blog/myblog/${user.name}`, { // ✅ dynamic
+        const res = await fetch(`http://127.0.0.1:8000/api/blog/myblog/${user.id}`, { // ✅ dynamic
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -24,7 +24,7 @@ export default function MyBlog() {
         });
 
         const data = await res.json();
-        console.log(data)
+        // console.log(data)
         setBlogs(data ? data.data : null);
       } catch (error) {
         console.error("Error fetching blogs:", error);

@@ -52,6 +52,7 @@ export default function Home(){
             <UserCircle/>
             <LogOut onClick={() => {
               localStorage.removeItem("token")
+              localStorage.removeItem("user")
               setIsLoggedIn(false)
             }}/>
           </div>

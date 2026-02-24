@@ -5,7 +5,6 @@ const User = require("./model/userModel");
 const cors = require("cors")
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
-const { blogs } = require("../frontend/src/assets/blogs");
 const Blog = require("./model/blogModel");
 
 
@@ -107,9 +106,9 @@ app.post("/api/blog/login", async (req, res) => {
 
     const user = await User.findOne({ email }).select("+password");
 
-    console.log("User from DB:", user);
-    console.log("Entered password:", password);
-    console.log("Stored password:", user?.password);
+    // console.log("User from DB:", user);
+    // console.log("Entered password:", password);
+    // console.log("Stored password:", user?.password);
 
     const isMatch = user
       ? await bcrypt.compare(password, user.password)
@@ -125,7 +124,11 @@ app.post("/api/blog/login", async (req, res) => {
 
     res.status(200).json({
       status: "Success",
-      message: "Login Successful"
+      message: "Login Successful",
+      data:{
+        id:user._id,
+        name:user.name,
+      }
     });
 
   } catch (err) {
@@ -138,18 +141,42 @@ app.post("/api/blog/login", async (req, res) => {
 
 app.get("/api/blog/myblog/:userId", async (req, res) => {
   try {
-    const myblog = blogs.filter(blog => blog.author.name === req.params.userId)
-    res.status(200).json({ status: "Success", data: myblog })
+    // console.log(req.params.userId)
+    const myblogs = await Blog.find({"author._id":req.params.userId})
+    res.status(200).json({ status: "Success", data: myblogs })
   } catch (err) {
     res.status(500).json({ status: "Fail", message: "Server Error" })
   }
 })
 
 app.post("/api/blogs",async(req,res) => {
-  const newBlog = req.body
-  // console.log(newBlog)
+  try{
+    const {newBlog,userId} = req.body
+    console.log(newBlog,userId)
+    const blogExists = await Blog.findOne({"title":newBlog.title,"excerpt":newBlog.excerpt})
 
-  res.status(200).json({status:"Success",data:newBlog})
+    if(blogExists)
+      return res.status(409).json({
+        status: "Fail",
+        message: "Blog with this title and excerpt already exists"
+      });
+
+
+    await Blog.create({
+      title:newBlog.title,
+      excerpt:newBlog.excerpt,
+      content:newBlog.content,
+      author:{_id:userId.id,name:userId.name},
+      tags:newBlog.tags,
+      comments:newBlog.comments
+    })
+
+    res.status(200).json({status:"Success",message:"Blog created Successfully"})
+  }catch(err){
+    console.log(err)
+    res.status(500).json({status:"Fail",message:"Server Error"})
+  }
+
 })
 
 
