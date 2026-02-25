@@ -196,11 +196,11 @@ app.get("/api/blogs/:id", async (req, res) => {
     res.status(500).json({ status: "Fail", message: err.message })
   }
 })
-
+//EDITING Blog
 app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
   try {
     const blog = await Blog.findById(req.params.id)
-    console.log(blog)  // ✅ typo fixed
+    // console.log(blog)  // ✅ typo fixed
 
     if (!blog) {
       return res.status(404).json({
@@ -238,6 +238,32 @@ app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
   }
 })
 
+//DELETING Blog
+app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
+  try {
+    const blog = await Blog.findById(req.params.id)
+    // console.log(blog)  // ✅ typo fixed
+
+    const deletedBlog = await Blog.findByIdAndDelete(
+      req.params.id
+    )
+
+    if (!deletedBlog) {
+      return res.status(404).json({
+        status: "Fail",
+        message: "Blog not found"
+      })
+    }
+
+    res.status(200).json({
+      status: "Success",
+      message: "Blog deleted successfully",
+    })
+
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message })  // ✅ err.message
+  }
+})
 
 //Starting Server
 const PORT = process.env.PORT || 8000;

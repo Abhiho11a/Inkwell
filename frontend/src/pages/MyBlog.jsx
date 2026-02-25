@@ -44,7 +44,7 @@ export default function MyBlog() {
     if (!confirmDelete) return;
 
     try {
-      await fetch(`http://localhost:5000/api/blogs/${id}`, {
+      await fetch(`http://127.0.0.1:8000/api/blogs/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
