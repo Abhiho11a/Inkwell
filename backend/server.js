@@ -239,7 +239,7 @@ app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
 })
 
 //DELETING Blog
-app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
+app.delete("/api/blogs/:id", async (req, res) => {  // ✅ protect added
   try {
     const blog = await Blog.findById(req.params.id)
     // console.log(blog)  // ✅ typo fixed
@@ -262,6 +262,53 @@ app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
 
   } catch (err) {
     res.status(500).json({ status: "Fail", message: err.message })  // ✅ err.message
+  }
+})
+
+//ADDING comments
+app.post("/api/blogs/:id/comments", async (req, res) => {  // ✅ protect added
+  try {
+    const { text,author } = req.body
+
+    if (!text) {
+      return res.status(400).json({
+        status: "Fail",
+        message: "Comment text is required"
+      })
+    }
+
+    const blog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: {           // ✅ $push adds to existing array
+          comments: {
+            author: {
+              _id: author._id,
+              name: author.name
+            },
+            text: text,
+            createdAt: new Date()
+          }
+        }
+      },
+      { new: true }        // returns updated blog
+    )
+
+    if (!blog) {
+      return res.status(404).json({
+        status: "Fail",
+        message: "Blog not found"
+      })
+    }
+
+    res.status(201).json({
+      status: "Success",
+      message: "Comment added successfully",
+      updatedBlog: blog   // send back updated comments array
+    })
+
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message })
   }
 })
 
