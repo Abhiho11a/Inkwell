@@ -139,6 +139,34 @@ app.post("/api/blog/login", async (req, res) => {
   }
 });
 
+//Fetch USER Details by email
+app.get("/api/blog/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "Fail",
+        message: "ID is required"
+      });
+    }
+
+    const user = await User.findById( userId );
+
+    res.status(200).json({
+      status: "Success",
+      message: "Login Successful",
+      data:user
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      status: "Fail",
+      message: "Server Error"
+    });
+  }
+});
+
 app.get("/api/blog/myblog/:userId", async (req, res) => {
   try {
     // console.log(req.params.userId)

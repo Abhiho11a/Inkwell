@@ -67,9 +67,8 @@ export default function BlogDetailModal({ blog, onClose }) {
           {/* Author + Date */}
           <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
             <span>By {viewedBlog.author.name || "Author Name"}</span>
-            <span>•</span>
             <span>
-              {viewedBlog.createdAt || "Jan 15, 2026"}
+              <span>•</span> {new Date(viewedBlog.createdAt).toLocaleDateString()|| "Jan 15, 2026"} 
             </span>
           </div>
 

@@ -6,6 +6,7 @@ import Signup from "./pages/Signup";
 import MyBlog from "./pages/MyBlog";
 import CreateBlog from "./pages/CreateBlog";
 import EditBlog from "./pages/EditBlog";
+import Profile from "./pages/Profile";
 
 export default function App() {
 
@@ -18,6 +19,7 @@ export default function App() {
       <Route path="/myblog" element={<MyBlog/>}/>
       <Route path="/create-blog" element={<CreateBlog/>}/>
       <Route path="/edit-blog/:id" element={<EditBlog/>}/>
+      <Route path="/profile" element={<Profile/>}/>
     </Routes>
     </>
   );
