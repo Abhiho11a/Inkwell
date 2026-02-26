@@ -128,6 +128,7 @@ app.post("/api/blog/login", async (req, res) => {
       data:{
         id:user._id,
         name:user.name,
+        email:user.email
       }
     });
 
@@ -166,6 +167,55 @@ app.get("/api/blog/:id", async (req, res) => {
     });
   }
 });
+app.put("/api/v1/users/:id", async (req, res) => {
+  // console.log(req.body.name)
+  // console.log(req.body.email)
+  // console.log(req.body.user)
+  try {
+    // 1. check if logged in user is updating their own profile
+    if (req.body.user.id !== req.params.id) {
+      return res.status(403).json({
+        status: "Fail",
+        message: "You can only update your own profile"
+      })
+    }
+
+    // 2. prevent password update from this route
+    if (req.body.password) {
+      return res.status(400).json({
+        status: "Fail",
+        message: "This route is not for password updates"
+      })
+    }
+    // console.log(req.body.name,req.body.email)
+
+    // 3. update user
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        name: req.body.name,
+        email: req.body.email,
+      },
+      { new: true, runValidators: true }
+    ).select("-password") // never send password back
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        status: "Fail",
+        message: "User not found"
+      })
+    }
+
+    res.status(200).json({
+      status: "Success",
+      message: "Profile updated successfully",
+      user: updatedUser
+    })
+
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message })
+  }
+})
 
 app.get("/api/blog/myblog/:userId", async (req, res) => {
   try {
