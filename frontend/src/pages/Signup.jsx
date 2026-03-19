@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Signup() {
   const [name,setName] = useState("")
   const [email,setEmail] = useState("")
@@ -15,7 +17,7 @@ export default function Signup() {
     }
     // console.log(name,email,password)
     try{
-    const response = await fetch("http://127.0.0.1:8000/api/blog/register",{
+    const response = await fetch(`${API}/api/blog/register`,{
       method:"POST",
       headers: {
         "Content-Type": "application/json",

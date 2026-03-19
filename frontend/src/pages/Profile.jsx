@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "../components/LoadingOverlay";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Profile() {
   const navigate = useNavigate();
 
@@ -11,7 +13,7 @@ export default function Profile() {
   const [loading,setLoading] = useState(true)
 
   async function fetchuserDetails(){
-    const response = await fetch(`http://127.0.0.1:8000/api/blog/${user.id}`)
+    const response = await fetch(`${API}/api/blog/${user.id}`)
 
     const data = await response.json()
 

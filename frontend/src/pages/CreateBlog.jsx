@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Send } from "lucide-react";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function CreateBlog() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -35,7 +37,7 @@ export default function CreateBlog() {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/blogs", {
+      const response = await fetch(`${API}/api/blogs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

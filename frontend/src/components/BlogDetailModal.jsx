@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mic2, Pause, Square, Heart, Bookmark, BookmarkCheck } from "lucide-react";
 
-const API = "http://127.0.0.1:8000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function BlogDetailModal({ blog, onClose }) {
   const [viewedBlog, setViewedBlog]       = useState(blog);

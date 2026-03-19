@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Bookmark, BookmarkCheck, Clock, Eye, Trash2 } from "lucide-react";
 import BlogDetailModal from "../components/BlogDetailModal";
 
-const API = "http://127.0.0.1:8000";
+const API = import.meta.env.VITE_API_URL;
 
 const TAG_MAP = {
   Tech:     { color:"#3b82f6", light:"#eff6ff" },

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function EditBlog() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ export default function EditBlog() {
     const fetchBlog = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/blogs/${id}`
+          `${API}/api/blogs/${id}`
         );
         const result = await res.json();
         const data = result.blog
@@ -73,7 +75,7 @@ export default function EditBlog() {
 
     try {
         console.log(updatedBlog)
-      const response = await fetch(`http://127.0.0.1:8000/api/blogs/${id}`,
+      const response = await fetch(`${API}/api/blogs/${id}`,
         {
           method: "PUT",
           headers: {

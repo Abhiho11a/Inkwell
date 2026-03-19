@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import BlogDetailModal from "../components/BlogDetailModal";
 
-const API = "http://127.0.0.1:8000";
+const API = import.meta.env.VITE_API_URL;
 
 const TAG_MAP = {
   Tech:     { color:"#3b82f6", light:"#eff6ff", kw:["react","javascript","js","node","python","typescript","nextjs","express","mongodb","sql","api","backend","frontend","fullstack","web","coding","programming","developer","software","github","git","docker","aws","cloud","ai","ml"] },

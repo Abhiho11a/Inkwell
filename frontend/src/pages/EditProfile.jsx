@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function EditProfile() {
   const navigate = useNavigate();
 
@@ -57,7 +59,7 @@ export default function EditProfile() {
       photo: imagePreview,
     };
 
-    const res = await fetch(`http://127.0.0.1:8000/api/v1/users/${storedUser.id}`, {  
+    const res = await fetch(`${API}/api/v1/users/${storedUser.id}`, {  
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

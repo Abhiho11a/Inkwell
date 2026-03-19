@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Login() {
   const [email,setEmail] = useState("")
   const [password,setPassword] = useState("")
@@ -14,7 +16,7 @@ export default function Login() {
     }
 
     try{
-      const response = await fetch("http://127.0.0.1:8000/api/blog/login",{
+      const response = await fetch(`${API}/api/blog/login`,{
         method:"POST",
          headers: {
         "Content-Type": "application/json",

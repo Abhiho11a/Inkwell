@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Pencil, Trash2, BookOpen, Calendar, Tag } from "lucide-react";
 
+const API = import.meta.env.VITE_API_URL;
+
 const CARD_ACCENTS = [
   { tag: "Tutorial",  tagColor: "text-rose-500",   tagBg: "bg-rose-50"   },
   { tag: "Deep Dive", tagColor: "text-blue-500",   tagBg: "bg-blue-50"   },
@@ -21,7 +23,7 @@ export default function MyBlog() {
     const fetchBlogs = async () => {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
-        const res = await fetch(`http://127.0.0.1:8000/api/blog/myblog/${user.id}`, {
+        const res = await fetch(`${API}/api/blog/myblog/${user.id}`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -40,7 +42,7 @@ export default function MyBlog() {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
     setDeletingId(id);
     try {
-      await fetch(`http://127.0.0.1:8000/api/blogs/${id}`, {
+      await fetch(`${API}/api/blogs/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
