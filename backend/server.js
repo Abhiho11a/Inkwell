@@ -404,6 +404,101 @@ app.post("/api/blogs/:id/comments", async (req, res) => {  // ✅ protect added
   }
 })
 
+// ── 1. TRACK VIEW (call this when a blog is opened)
+// POST /api/blogs/:id/view
+app.post("/api/blogs/:id/view", async (req, res) => {
+  try {
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) return res.status(404).json({ status: "Fail", message: "Blog not found" });
+
+    // only count if this IP hasn't viewed before
+    if (!blog.viewedBy.includes(ip)) {
+      blog.views += 1;
+      blog.viewedBy.push(ip);
+      await blog.save();
+    }
+
+    res.status(200).json({ status: "Success", views: blog.views });
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message });
+  }
+});
+
+// GET /api/analytics/:userId
+app.get("/api/analytics/:userId", async (req, res) => {
+  try {
+    const blogs = await Blog.find({ "author._id": req.params.userId });
+
+    const totalViews = blogs.reduce((sum, b) => sum + (b.views || 0), 0);
+    const totalLikes = blogs.reduce((sum, b) => sum + (b.likes || 0), 0);
+    const totalComments = blogs.reduce((sum, b) => sum + (b.comments?.length || 0), 0);
+
+    const blogStats = blogs.map(b => ({
+      _id: b._id,
+      title: b.title,
+      views: b.views || 0,
+      likes: b.likes || 0,
+      comments: b.comments?.length || 0,
+      tags: b.tags,
+      createdAt: b.createdAt,
+      readTime: Math.ceil(b.content?.split(" ").length / 200) || 1
+    }));
+
+    // sort by views descending
+    blogStats.sort((a, b) => b.views - a.views);
+
+    res.status(200).json({
+      status: "Success",
+      data: {
+        totalViews,
+        totalLikes,
+        totalComments,
+        totalBlogs: blogs.length,
+        topBlog: blogStats[0] || null,
+        blogs: blogStats
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message });
+  }
+});
+// Track a view (call when blog is opened)
+app.post("/api/blogs/:id/view", async (req, res) => {
+  try {
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ status: "Fail", message: "Not found" });
+    if (!blog.viewedBy.includes(ip)) {
+      blog.views += 1;
+      blog.viewedBy.push(ip);
+      await blog.save();
+    }
+    res.status(200).json({ status: "Success", views: blog.views });
+  } catch (err) { res.status(500).json({ status: "Fail", message: err.message }); }
+});
+
+// Get analytics for a user
+app.get("/api/analytics/:userId", async (req, res) => {
+  try {
+    const blogs = await Blog.find({ "author._id": req.params.userId });
+    const blogStats = blogs.map(b => ({
+      _id: b._id, title: b.title,
+      views: b.views || 0, likes: b.likes || 0,
+      comments: b.comments?.length || 0, tags: b.tags,
+      createdAt: b.createdAt,
+      readTime: Math.ceil(b.content?.split(" ").length / 200) || 1
+    })).sort((a, b) => b.views - a.views);
+    res.status(200).json({ status: "Success", data: {
+      totalViews: blogStats.reduce((s, b) => s + b.views, 0),
+      totalLikes: blogStats.reduce((s, b) => s + b.likes, 0),
+      totalComments: blogStats.reduce((s, b) => s + b.comments, 0),
+      totalBlogs: blogs.length, topBlog: blogStats[0] || null, blogs: blogStats
+    }});
+  } catch (err) { res.status(500).json({ status: "Fail", message: err.message }); }
+});
+
 //Starting Server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT,"0.0.0.0",(req,res)=>{

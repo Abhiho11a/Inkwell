@@ -32,7 +32,27 @@ const blogSchema = new mongoose.Schema({
     _id: { type: String, required: true }
   },
   tags: [{ type: String, trim: true }],
-  comments: [commentSchema]
+  comments: [commentSchema],
+  views: {
+    type: Number,
+    default: 0
+  },
+  viewedBy: {
+    type: [String], // stores IP addresses for unique view tracking
+    default: []
+  },
+  likes: {
+    type: Number,
+    default: 0
+  },
+  likedBy: {
+    type: [String], // stores user IDs
+    default: []
+  },
+  readTime: {
+    type: Number, // in minutes
+    default: 1
+  }
 }, { timestamps: true })
 
 const Blog = mongoose.model("Blog", blogSchema)

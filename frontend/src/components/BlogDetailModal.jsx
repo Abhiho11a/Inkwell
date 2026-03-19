@@ -8,8 +8,15 @@ export default function BlogDetailModal({ blog, onClose }) {
   const [showAddComment, setShowAddComment] = useState(false);
   const [commentText,setCommentText] = useState("")
   const user = JSON.parse(localStorage.getItem("user"))
+  const navigate = useNavigate();
 
   if (!blog) return null;
+
+  useEffect(() => {
+  if (blog?._id) {
+    fetch(`http://127.0.0.1:8000/api/blogs/${blog._id}/view`, { method: "POST" });
+  }
+}, [blog]);
 
   async function handleAddComment(){
     try {
@@ -42,6 +49,15 @@ export default function BlogDetailModal({ blog, onClose }) {
       // setUpdating(false);
     }
   };
+
+  const handleProtectedAction = (action) => {
+  const token = localStorage.getItem("token"); // or whatever key you use
+  if (!token) {
+    navigate("/login"); // make sure useNavigate() is imported
+    return;
+  }
+  action();
+};
 
   return (
     <>
@@ -101,14 +117,14 @@ export default function BlogDetailModal({ blog, onClose }) {
           {/* Comment Button */}
           <div className="flex gap-3 mt-4">
             <button
-              onClick={() => setShowComments(!showComments)}
+              onClick={() => handleProtectedAction(() => setShowComments(!showComments))}
               className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
             >
               {showComments ? "Hide Comments" : "View Comments"}
             </button>
 
             <button
-              onClick={() => setShowAddComment(!showAddComment)}
+              onClick={() => handleProtectedAction(() => setShowAddComment(!showAddComment))}
               className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg transition"
             >
               {showAddComment ? "Cancel" : "+ Add Comment"}
