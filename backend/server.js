@@ -6,7 +6,7 @@ const cors = require("cors")
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const Blog = require("./model/blogModel");
-
+const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 connectDB()
@@ -14,6 +14,20 @@ connectDB()
 app.use(express.json())
 app.use(cors())
 
+const rateLimit = require("express-rate-limit");
+
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000,        // 1 minute window
+  max: 5,                      // max 5 AI requests per minute per user
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: "Fail",
+    message: "⚠️ Too many AI requests. Please wait a minute and try again."
+  }
+});
+app.use("/api/ai", aiLimiter); 
+app.use("/api/ai", aiRoutes);
 
 //ROUTES
 app.get("/",(req,res)=>{
