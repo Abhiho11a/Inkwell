@@ -499,6 +499,81 @@ app.get("/api/analytics/:userId", async (req, res) => {
   } catch (err) { res.status(500).json({ status: "Fail", message: err.message }); }
 });
 
+// POST /api/blogs/:id/like
+app.post("/api/blogs/:id/like", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ status: "Fail", message: "userId required" });
+ 
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ status: "Fail", message: "Blog not found" });
+ 
+    const alreadyLiked = blog.likedBy.includes(userId);
+ 
+    if (alreadyLiked) {
+      // unlike
+      blog.likedBy = blog.likedBy.filter(id => id !== userId);
+      blog.likes   = Math.max(0, blog.likes - 1);
+    } else {
+      // like
+      blog.likedBy.push(userId);
+      blog.likes += 1;
+    }
+ 
+    await blog.save();
+ 
+    res.status(200).json({
+      status:  "Success",
+      liked:   !alreadyLiked,
+      likes:   blog.likes
+    });
+ 
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message });
+  }
+});
+ 
+// POST /api/blogs/:id/bookmark
+app.post("/api/blogs/:id/bookmark", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ status: "Fail", message: "userId required" });
+ 
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ status: "Fail", message: "Blog not found" });
+ 
+    const alreadyBookmarked = blog.bookmarkedBy.includes(userId);
+ 
+    if (alreadyBookmarked) {
+      blog.bookmarkedBy = blog.bookmarkedBy.filter(id => id !== userId);
+    } else {
+      blog.bookmarkedBy.push(userId);
+    }
+ 
+    await blog.save();
+ 
+    res.status(200).json({
+      status:     "Success",
+      bookmarked: !alreadyBookmarked,
+    });
+ 
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message });
+  }
+});
+ 
+// GET /api/users/:userId/bookmarks
+app.get("/api/users/:userId/bookmarks", async (req, res) => {
+  try {
+    const blogs = await Blog.find({ bookmarkedBy: req.params.userId })
+      .sort({ createdAt: -1 });
+ 
+    res.status(200).json({ status: "Success", data: blogs });
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message });
+  }
+});
+
 //Starting Server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT,"0.0.0.0",(req,res)=>{

@@ -52,7 +52,12 @@ const blogSchema = new mongoose.Schema({
   readTime: {
     type: Number, // in minutes
     default: 1
-  }
+  },
+  // Add this after likedBy:
+  bookmarkedBy: {
+    type: [String], // stores user IDs
+    default: []
+  },
 }, { timestamps: true })
 
 const Blog = mongoose.model("Blog", blogSchema)

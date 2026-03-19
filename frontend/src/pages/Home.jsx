@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   LogOut, UserCircle, Search, ArrowRight,
-  Lock, BarChart2, Clock, Eye, Flame, X, Feather, PenSquare
+  Lock, BarChart2, Clock, Eye, Flame, X, Feather, PenSquare,
+  Bookmark,
+  NotebookPen
 } from "lucide-react";
 import BlogDetailModal from "../components/BlogDetailModal";
 
@@ -241,9 +243,13 @@ export default function Home() {
 
             <div className="flex items-center gap-1 ml-auto">
               {isLoggedIn ? (<>
-                <Link to="/myblog" className="text-white/50 text-xs hover:text-white transition px-3 py-2">My Blogs</Link>
+                <Link to="/myblog" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
+                  <NotebookPen size={11}/> My Blogs</Link>
                 <Link to="/analytics" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
                   <BarChart2 size={11}/> Analytics
+                </Link>
+                <Link to="/saved" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
+                  <Bookmark size={11}/> Saved
                 </Link>
                 <Link to="/create-blog" className="ml-1 flex items-center gap-1.5 bg-[#e94560] hover:bg-[#d13a52] text-white text-xs font-medium px-3 py-2 rounded-lg transition">
                   <PenSquare size={11}/> Write

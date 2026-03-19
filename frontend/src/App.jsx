@@ -9,6 +9,7 @@ import EditBlog from "./pages/EditBlog";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Analytics from "./pages/Analytics";
+import SavedBlogs from "./pages/SavedBlog";
 
 export default function App() {
 
@@ -24,6 +25,7 @@ export default function App() {
       <Route path="/profile" element={<Profile/>}/>
       <Route path="/edit-profile" element={<EditProfile/>}/>
       <Route path="/analytics" element={<Analytics />} />
+      <Route path="/saved" element={<SavedBlogs />} />
     </Routes>
     </>
   );
