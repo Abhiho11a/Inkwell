@@ -29,12 +29,10 @@ export default function Login() {
 
     const data = await response.json();
 
-    if(data.status === "Success")
-    {
-      localStorage.setItem("token","token123")
-      localStorage.setItem("user",JSON.stringify(data.data))
-      navigate("/")
-
+    if (data.status === "Success") {
+      localStorage.setItem("token", data.token); 
+      localStorage.setItem("user", JSON.stringify(data.data));
+      navigate("/");
     }
     alert(data.message)
 

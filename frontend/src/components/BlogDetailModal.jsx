@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mic2, Pause, Square, Heart, Bookmark, BookmarkCheck } from "lucide-react";
+import api from "../utils/api";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -66,12 +67,14 @@ export default function BlogDetailModal({ blog, onClose }) {
     if (likeLoading) return;
     setLikeLoading(true);
     try {
-      const res  = await fetch(`${API}/api/blogs/${viewedBlog._id}/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
-      const data = await res.json();
+      // const res  = await fetch(`${API}/api/blogs/${viewedBlog._id}/like`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ userId }),
+      // });
+      // const data = await res.json();
+      const data = await api.post(`/api/blogs/${viewedBlog._id}/like`, {});
+
       if (data.status === "Success") {
         setLiked(data.liked);
         setLikeCount(data.likes);
@@ -86,12 +89,14 @@ export default function BlogDetailModal({ blog, onClose }) {
     if (bookmarkLoading) return;
     setBookmarkLoading(true);
     try {
-      const res  = await fetch(`${API}/api/blogs/${viewedBlog._id}/bookmark`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
-      const data = await res.json();
+      // const res  = await fetch(`${API}/api/blogs/${viewedBlog._id}/bookmark`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ userId }),
+      // });
+      // const data = await res.json();
+      const data = await api.post(`/api/blogs/${viewedBlog._id}/bookmark`, {});
+
       if (data.status === "Success") setBookmarked(data.bookmarked);
     } catch (err) { console.error(err); }
     finally { setBookmarkLoading(false); }
@@ -100,12 +105,14 @@ export default function BlogDetailModal({ blog, onClose }) {
   // ── Add comment ───────────────────────────────────────────────────────────
   async function handleAddComment() {
     try {
-      const res  = await fetch(`${API}/api/blogs/${viewedBlog._id}/comments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: commentText, author: { name: user.name, _id: userId } }),
-      });
-      const data = await res.json();
+      // const res  = await fetch(`${API}/api/blogs/${viewedBlog._id}/comments`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ text: commentText, author: { name: user.name, _id: userId } }),
+      // });
+      // const data = await res.json();
+      const data = await api.post(`/api/blogs/${viewedBlog._id}/comments`, { text: commentText });
+
       if (data.status === "Success") {
         alert("Comment posted");
         setCommentText(""); setShowAddComment(false);

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Send, Sparkles, Wand2, Tag, FileText, RefreshCw, X, Check, ChevronDown } from "lucide-react";
+import api from "../utils/api";
 
 const API = import.meta.env.VITE_API_URL;
 
 export default function CreateBlog() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [formData, setFormData] = useState({ title: "", excerpt: "", content: "", tags: "" });
@@ -131,12 +132,14 @@ export default function CreateBlog() {
       comments: [],
     };
     try {
-      const response = await fetch(`${API}/api/blogs`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ newBlog, userId: user?.id }),
-      });
-      const data = await response.json();
+      // const response = await fetch(`${API}/api/blogs`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      //   body: JSON.stringify({ newBlog, userId: user?.id }),
+      // });
+      // const data = await response.json();
+      const data = await api.post("/api/blogs", { newBlog });
+
       if (data.status === "Success") { alert(data.message); navigate("/myblog"); }
       else alert(data.message);
     } catch (error) { console.error("Blog creation failed:", error); }

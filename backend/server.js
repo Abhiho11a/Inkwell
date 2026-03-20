@@ -15,6 +15,7 @@ app.use(express.json())
 app.use(cors())
 
 const rateLimit = require("express-rate-limit");
+const { signToken, protect, restrictToAuthor } = require("./middleware/JwtHelpers");
 
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000,        // 1 minute window
@@ -74,16 +75,20 @@ app.post("/api/blog/register", async (req, res) => {
     // const salt = await bcrypt.genSalt(10);
     // const hashedPassword = await bcrypt.hash(password, salt);
 
-    await User.create({
+    const user = await User.create({
       name,
       email,
       password: password
     });
 
-    // console.log(user)
+    console.log(user)
+    const token = signToken(user._id);
+
     res.status(201).json({
       status: "Success",
-      message: "User Created Successfully"
+      message: "User Created Successfully",
+      token,                    
+      data: { id: user._id, name: user.name, email: user.email }
     });
 
   } catch (error) {
@@ -136,14 +141,12 @@ app.post("/api/blog/login", async (req, res) => {
       });
     }
 
+    const token = signToken(user._id);
     res.status(200).json({
       status: "Success",
       message: "Login Successful",
-      data:{
-        id:user._id,
-        name:user.name,
-        email:user.email
-      }
+      token,                    
+      data: { id: user._id, name: user.name, email: user.email }
     });
 
   } catch (err) {
@@ -181,7 +184,7 @@ app.get("/api/blog/:id", async (req, res) => {
     });
   }
 });
-app.put("/api/v1/users/:id", async (req, res) => {
+app.put("/api/v1/users/:id",protect, async (req, res) => {
   // console.log(req.body.name)
   // console.log(req.body.email)
   // console.log(req.body.user)
@@ -241,10 +244,10 @@ app.get("/api/blog/myblog/:userId", async (req, res) => {
   }
 })
 
-app.post("/api/blogs",async(req,res) => {
+app.post("/api/blogs",protect,async(req,res) => {
   try{
-    const {newBlog,userId} = req.body
-    console.log(newBlog,userId)
+    const { newBlog } = req.body           
+    // console.log(newBlog,userId)
     const blogExists = await Blog.findOne({"title":newBlog.title,"excerpt":newBlog.excerpt})
 
     if(blogExists)
@@ -253,12 +256,13 @@ app.post("/api/blogs",async(req,res) => {
         message: "Blog with this title and excerpt already exists"
       });
 
+    const user = await User.findById(req.userId);
 
     await Blog.create({
       title: newBlog.title,
       excerpt: newBlog.excerpt,
       content: newBlog.content,
-      author: { _id: newBlog.author._id, name: newBlog.author.name }, // ✅
+      author: { _id: req.userId, name: user.name },
       tags: newBlog.tags,
       comments: newBlog.comments
     });
@@ -289,7 +293,7 @@ app.get("/api/blogs/:id", async (req, res) => {
   }
 })
 //EDITING Blog
-app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
+app.put("/api/blogs/:id",protect,restrictToAuthor, async (req, res) => {  // ✅ protect added
   try {
     const blog = await Blog.findById(req.params.id)
     // console.log(blog)  // ✅ typo fixed
@@ -331,7 +335,7 @@ app.put("/api/blogs/:id", async (req, res) => {  // ✅ protect added
 })
 
 //DELETING Blog
-app.delete("/api/blogs/:id", async (req, res) => {  // ✅ protect added
+app.delete("/api/blogs/:id",protect,restrictToAuthor, async (req, res) => {  // ✅ protect added
   try {
     const blog = await Blog.findById(req.params.id)
     // console.log(blog)  // ✅ typo fixed
@@ -358,9 +362,9 @@ app.delete("/api/blogs/:id", async (req, res) => {  // ✅ protect added
 })
 
 //ADDING comments
-app.post("/api/blogs/:id/comments", async (req, res) => {  // ✅ protect added
+app.post("/api/blogs/:id/comments",protect, async (req, res) => {  // ✅ protect added
   try {
-    const { text,author } = req.body
+    const { text } = req.body
 
     if (!text) {
       return res.status(400).json({
@@ -368,16 +372,14 @@ app.post("/api/blogs/:id/comments", async (req, res) => {  // ✅ protect added
         message: "Comment text is required"
       })
     }
+    const user = await User.findById(req.userId)
 
     const blog = await Blog.findByIdAndUpdate(
       req.params.id,
       {
-        $push: {           // ✅ $push adds to existing array
+        $push: {    
           comments: {
-            author: {
-              _id: author._id,
-              name: author.name
-            },
+            author: { _id: req.userId, name: user.name },
             text: text,
             createdAt: new Date()
           }
@@ -427,7 +429,7 @@ app.post("/api/blogs/:id/view", async (req, res) => {
 });
 
 // GET /api/analytics/:userId
-app.get("/api/analytics/:userId", async (req, res) => {
+app.get("/api/analytics/:userId",protect, async (req, res) => {
   try {
     const blogs = await Blog.find({ "author._id": req.params.userId });
 
@@ -500,7 +502,7 @@ app.get("/api/analytics/:userId", async (req, res) => {
 });
 
 // POST /api/blogs/:id/like
-app.post("/api/blogs/:id/like", async (req, res) => {
+app.post("/api/blogs/:id/like",protect, async (req, res) => {
   try {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ status: "Fail", message: "userId required" });
@@ -534,7 +536,7 @@ app.post("/api/blogs/:id/like", async (req, res) => {
 });
  
 // POST /api/blogs/:id/bookmark
-app.post("/api/blogs/:id/bookmark", async (req, res) => {
+app.post("/api/blogs/:id/bookmark",protect, async (req, res) => {
   try {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ status: "Fail", message: "userId required" });

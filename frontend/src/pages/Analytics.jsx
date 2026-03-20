@@ -4,6 +4,7 @@ import {
   ArrowLeft, Eye, Heart, MessageCircle, BookOpen,
   TrendingUp, Award, Calendar, Tag, BarChart2, RefreshCw
 } from "lucide-react";
+import api from "../utils/api";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -72,8 +73,10 @@ export default function Analytics() {
   async function fetchAnalytics() {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/analytics/${user.id}`);
-      const json = await res.json();
+      // const res = await fetch(`${API}/api/analytics/${user.id}`);
+      // const json = await res.json();
+      const json = await api.get(`/api/analytics/${user._id}`);
+
       if (json.status === "Success") setData(json.data);
       else setError(json.message);
     } catch {
