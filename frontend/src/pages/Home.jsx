@@ -4,7 +4,8 @@ import {
   LogOut, UserCircle, Search, ArrowRight,
   Lock, BarChart2, Clock, Eye, Flame, X, Feather, PenSquare,
   Bookmark,
-  NotebookPen
+  NotebookPen,
+  Menu
 } from "lucide-react";
 import BlogDetailModal from "../components/BlogDetailModal";
 
@@ -182,6 +183,7 @@ export default function Home() {
   const [blogs, setBlogs]             = useState([]);
   const [loading, setLoading]         = useState(true);
   const [totalPages, setTotalPages]   = useState(1);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const LIMIT = 9;
   const FILTERS = ["All","Tech","Design","Career","Tutorial","Startup","Life"];
@@ -242,26 +244,109 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-1 ml-auto">
-              {isLoggedIn ? (<>
-                <Link to="/myblog" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
-                  <NotebookPen size={11}/> My Blogs</Link>
-                <Link to="/analytics" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
-                  <BarChart2 size={11}/> Analytics
-                </Link>
-                <Link to="/saved" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
-                  <Bookmark size={11}/> Saved
-                </Link>
-                <Link to="/create-blog" className="ml-1 flex items-center gap-1.5 bg-[#e94560] hover:bg-[#d13a52] text-white text-xs font-medium px-3 py-2 rounded-lg transition">
-                  <PenSquare size={11}/> Write
-                </Link>
-                <UserCircle size={18} className="text-white/40 hover:text-white cursor-pointer transition ml-2"
-                  onClick={() => navigate("/profile")}/>
-                <LogOut size={16} className="text-white/30 hover:text-white cursor-pointer transition ml-1"
-                  onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("user"); setIsLoggedIn(false); }}/>
-              </>) : (<>
-                <button onClick={() => navigate("/login")} className="text-white/50 text-xs hover:text-white transition px-3 py-2">Login</button>
-                <button onClick={() => navigate("/signup")} className="bg-[#e94560] text-white text-xs font-medium px-4 py-2 rounded-lg hover:bg-[#d13a52] transition ml-1">Register</button>
-              </>)}
+  
+              {/* Desktop Nav */}
+              <div className="hidden md:flex items-center gap-1">
+                {isLoggedIn ? (
+                  <>
+                    <Link to="/myblog" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
+                      <NotebookPen size={11}/> My Blogs
+                    </Link>
+                    <Link to="/analytics" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
+                      <BarChart2 size={11}/> Analytics
+                    </Link>
+                    <Link to="/saved" className="text-white/50 text-xs hover:text-white transition px-3 py-2 flex items-center gap-1">
+                      <Bookmark size={11}/> Saved
+                    </Link>
+                    <Link to="/create-blog" className="ml-1 flex items-center gap-1.5 bg-[#e94560] hover:bg-[#d13a52] text-white text-xs font-medium px-3 py-2 rounded-lg transition">
+                      <PenSquare size={11}/> Write
+                    </Link>
+                    <UserCircle size={18} className="text-white/40 hover:text-white cursor-pointer transition ml-2"
+                      onClick={() => navigate("/profile")}/>
+                    <LogOut size={16} className="text-white/30 hover:text-white cursor-pointer transition ml-1"
+                      onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("user"); setIsLoggedIn(false); }}/>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => navigate("/login")} className="text-white/50 text-xs hover:text-white transition px-3 py-2">Login</button>
+                    <button onClick={() => navigate("/signup")} className="bg-[#e94560] text-white text-xs font-medium px-4 py-2 rounded-lg hover:bg-[#d13a52] transition ml-1">Register</button>
+                  </>
+                )}
+              </div>
+
+              {/* Mobile Hamburger Button */}
+              <button
+                className="md:hidden text-white/60 hover:text-white transition ml-2"
+                onClick={() => setMenuOpen(!menuOpen)}
+              >
+                {menuOpen ? <X size={20}/> : <Menu size={20}/>}
+              </button>
+
+              {/* Mobile Sidebar Overlay */}
+              {menuOpen && (
+                <div
+                  className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                  onClick={() => setMenuOpen(false)}
+                />
+              )}
+
+              {/* Mobile Sidebar */}
+              <div className={`fixed top-0 right-0 h-full w-64 bg-[#1a1a2e] z-50 transform transition-transform duration-300 md:hidden
+                ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
+                
+                {/* Sidebar Header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+                  <span className="text-white font-semibold text-sm">Menu</span>
+                  <X size={18} className="text-white/50 cursor-pointer hover:text-white" onClick={() => setMenuOpen(false)}/>
+                </div>
+
+                {/* Sidebar Links */}
+                <div className="flex flex-col px-4 py-4 gap-1">
+                  {isLoggedIn ? (
+                    <>
+                      <Link to="/myblog" onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 text-white/60 hover:text-white hover:bg-white/5 px-3 py-3 rounded-lg transition text-sm">
+                        <NotebookPen size={15}/> My Blogs
+                      </Link>
+                      <Link to="/analytics" onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 text-white/60 hover:text-white hover:bg-white/5 px-3 py-3 rounded-lg transition text-sm">
+                        <BarChart2 size={15}/> Analytics
+                      </Link>
+                      <Link to="/saved" onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 text-white/60 hover:text-white hover:bg-white/5 px-3 py-3 rounded-lg transition text-sm">
+                        <Bookmark size={15}/> Saved
+                      </Link>
+                      <Link to="/create-blog" onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 bg-[#e94560] hover:bg-[#d13a52] text-white px-3 py-3 rounded-lg transition text-sm font-medium mt-2">
+                        <PenSquare size={15}/> Write a Blog
+                      </Link>
+
+                      <div className="border-t border-white/10 mt-3 pt-3 flex flex-col gap-1">
+                        <button onClick={() => { navigate("/profile"); setMenuOpen(false); }}
+                          className="flex items-center gap-3 text-white/60 hover:text-white hover:bg-white/5 px-3 py-3 rounded-lg transition text-sm">
+                          <UserCircle size={15}/> Profile
+                        </button>
+                        <button onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("user"); setIsLoggedIn(false); setMenuOpen(false); }}
+                          className="flex items-center gap-3 text-red-400 hover:text-red-300 hover:bg-white/5 px-3 py-3 rounded-lg transition text-sm">
+                          <LogOut size={15}/> Logout
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => { navigate("/login"); setMenuOpen(false); }}
+                        className="flex items-center justify-center text-white/70 hover:text-white border border-white/20 hover:border-white/40 px-3 py-3 rounded-lg transition text-sm">
+                        Login
+                      </button>
+                      <button onClick={() => { navigate("/signup"); setMenuOpen(false); }}
+                        className="flex items-center justify-center bg-[#e94560] hover:bg-[#d13a52] text-white px-3 py-3 rounded-lg transition text-sm font-medium mt-1">
+                        Register
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
             </div>
           </div>
         </nav>

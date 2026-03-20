@@ -255,13 +255,13 @@ app.post("/api/blogs",async(req,res) => {
 
 
     await Blog.create({
-      title:newBlog.title,
-      excerpt:newBlog.excerpt,
-      content:newBlog.content,
-      author:{_id:userId.id,name:userId.name},
-      tags:newBlog.tags,
-      comments:newBlog.comments
-    })
+      title: newBlog.title,
+      excerpt: newBlog.excerpt,
+      content: newBlog.content,
+      author: { _id: newBlog.author._id, name: newBlog.author.name }, // ✅
+      tags: newBlog.tags,
+      comments: newBlog.comments
+    });
 
     res.status(200).json({status:"Success",message:"Blog created Successfully"})
   }catch(err){

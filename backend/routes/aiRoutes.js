@@ -2,16 +2,18 @@ const express = require("express");
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+const Groq = require("groq-sdk");
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-async function askGemini(prompt) {
+async function askGemini(prompt) {  // keeping same name so nothing else breaks!
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text().trim();
+    const result = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+    });
+    return result.choices[0].message.content.trim();
   } catch (err) {
-    console.error("❌ Gemini Error:", err.message); // ADD THIS
+    console.error("❌ Groq Error:", err.message);
     throw err;
   }
 }
@@ -127,7 +129,7 @@ router.post("/tags", async (req, res) => {
     }
 
     const prompt = `You are a blog tagging assistant.
-Read the following blog content and generate 5-7 relevant tags (single words or short phrases).
+Read the following blog content and generate 4-5 relevant tags (single words or short phrases).
 Return ONLY a JSON array of strings. No extra text, no markdown.
 Example: ["javascript", "web development", "react", "tutorial"]
 
