@@ -37,12 +37,13 @@ export default function CreateBlog() {
     if (!formData.content.trim()) return alert("Write some content first!");
     setAiLoading((p) => ({ ...p, continue: true }));
     try {
-      const res = await fetch(`${API}/api/ai/continue`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ content: formData.content }),
-      });
-      const data = await res.json();
+      // const res = await fetch(`${API}/api/ai/continue`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      //   body: JSON.stringify({ content: formData.content }),
+      // });
+      // const data = await res.json();
+      const data = await api.post("/api/ai/continue", { content: formData.content });
       if (data.status === "Success") {
         setFormData((p) => ({ ...p, content: p.content + " " + data.data }));
       }
@@ -54,12 +55,13 @@ export default function CreateBlog() {
     if (!formData.content.trim()) return alert("Write some content first!");
     setAiLoading((p) => ({ ...p, summarize: true }));
     try {
-      const res = await fetch(`${API}/api/ai/summarize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ content: formData.content }),
-      });
-      const data = await res.json();
+      // const res = await fetch(`${API}/api/ai/summarize`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      //   body: JSON.stringify({ content: formData.content }),
+      // });
+      // const data = await res.json();
+      const data = await api.post("/api/ai/summarize", { content: formData.content });
       if (data.status === "Success") setFormData((p) => ({ ...p, excerpt: data.data }));
     } catch (e) { console.error(e); }
     finally { setAiLoading((p) => ({ ...p, summarize: false })); }
@@ -69,12 +71,13 @@ export default function CreateBlog() {
     if (!formData.content.trim()) return alert("Write some content first!");
     setAiLoading((p) => ({ ...p, titles: true }));
     try {
-      const res = await fetch(`${API}/api/ai/titles`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ content: formData.content }),
-      });
-      const data = await res.json();
+      // const res = await fetch(`${API}/api/ai/titles`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      //   body: JSON.stringify({ content: formData.content }),
+      // });
+      // const data = await res.json();
+      const data = await api.post("/api/ai/titles", { content: formData.content });
       if (data.status === "Success") { setTitleSuggestions(data.data); setShowTitleSuggestions(true); }
     } catch (e) { console.error(e); }
     finally { setAiLoading((p) => ({ ...p, titles: false })); }
@@ -84,12 +87,13 @@ export default function CreateBlog() {
     if (!formData.content.trim()) return alert("Write some content first!");
     setAiLoading((p) => ({ ...p, tags: true }));
     try {
-      const res = await fetch(`${API}/api/ai/tags`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ content: formData.content }),
-      });
-      const data = await res.json();
+      // const res = await fetch(`${API}/api/ai/tags`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      //   body: JSON.stringify({ content: formData.content }),
+      // });
+      // const data = await res.json();
+      const data = await api.post("/api/ai/tags", { content: formData.content });
       if (data.status === "Success") setFormData((p) => ({ ...p, tags: data.data.join(", ") }));
     } catch (e) { console.error(e); }
     finally { setAiLoading((p) => ({ ...p, tags: false })); }
@@ -101,12 +105,13 @@ export default function CreateBlog() {
     setImproveTarget(field);
     setAiLoading((p) => ({ ...p, [`improve_${field}`]: true }));
     try {
-      const res = await fetch(`${API}/api/ai/improve`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ sentence: text, tone: selectedTone }),
-      });
-      const data = await res.json();
+      // const res = await fetch(`${API}/api/ai/improve`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      //   body: JSON.stringify({ sentence: text, tone: selectedTone }),
+      // });
+      // const data = await res.json();
+      const data = await api.post("/api/ai/improve", { sentence: text, tone: selectedTone });
       if (data.status === "Success") { setImprovedText(data.data); setShowImprovePopup(true); }
     } catch (e) { console.error(e); }
     finally { setAiLoading((p) => ({ ...p, [`improve_${field}`]: false })); }

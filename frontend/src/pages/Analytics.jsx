@@ -75,7 +75,7 @@ export default function Analytics() {
     try {
       // const res = await fetch(`${API}/api/analytics/${user.id}`);
       // const json = await res.json();
-      const json = await api.get(`/api/analytics/${user._id}`);
+      const json = await api.get(`/api/analytics/${user.id}`);
 
       if (json.status === "Success") setData(json.data);
       else setError(json.message);
