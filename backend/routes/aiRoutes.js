@@ -129,12 +129,12 @@ router.post("/tags", async (req, res) => {
     }
 
     const prompt = `You are a blog tagging assistant.
-Read the following blog content and generate 4-5 relevant tags (single words or short phrases).
-Return ONLY a JSON array of strings. No extra text, no markdown.
-Example: ["javascript", "web development", "react", "tutorial"]
+    Read the following blog content and generate 2-5 relevant tags (single words or short phrases).
+    Return ONLY a JSON array of strings. No extra text, no markdown.
+    Example: ["javascript", "web development", "react", "tutorial"]
 
-Blog Content:
-"${content}"`;
+    Blog Content:
+    "${content}"`;
 
     const raw = await askGemini(prompt);
 
@@ -143,6 +143,30 @@ Blog Content:
 
     res.status(200).json({ status: "Success", data: tags });
 
+  } catch (err) {
+    res.status(500).json({ status: "Fail", message: err.message });
+  }
+});
+// POST /api/ai/bullets
+router.post("/bullets", async (req, res) => {
+  try {
+    const { content, title } = req.body;
+    if (!content) return res.status(400).json({ status: "Fail", message: "Content required" });
+
+    const prompt = `You are a blog summarizer.
+    Read the following blog titled "${title}" and summarize it in exactly 3 short bullet points.
+    Each bullet point should be max 15 words.
+    Return ONLY a JSON array of 3 strings. No markdown, no extra text.
+    Example: ["Point one here", "Point two here", "Point three here"]
+
+    Blog Content:
+    "${content}"`;
+
+    const raw     = await askGemini(prompt);
+    const cleaned = raw.replace(/```json|```/g, "").trim();
+    const bullets = JSON.parse(cleaned);
+
+    res.status(200).json({ status: "Success", data: bullets });
   } catch (err) {
     res.status(500).json({ status: "Fail", message: err.message });
   }
